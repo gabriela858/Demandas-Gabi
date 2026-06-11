@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Central de Demandas</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0F0F1A;min-height:100vh;color:#E8E8F0}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#2A2A3E;border-radius:4px}
+
+.header{background:linear-gradient(135deg,#1A1A2E 0%,#16213E 100%);padding:20px;border-bottom:1px solid #2A2A3E;display:flex;align-items:center;justify-content:space-between}
+.header-left .sub{color:#6C63FF;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}
+.header-left .title{color:#fff;font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.header-right{display:flex;gap:8px}
+.btn{border:none;border-radius:12px;padding:10px 16px;font-weight:600;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-purple{background:#6C63FF;color:#fff}
+.btn-green{background:#10B981;color:#fff}
+.btn-amber{background:#F59E0B;color:#fff}
+.btn-ghost{background:#1E1E30;color:#888;border:1px solid #2A2A3E}
+
+.statusbar{background:#1A1A2E;border-bottom:1px solid #2A2A3E;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sbtn{border:none;background:none;padding:14px 16px;cursor:pointer;border-bottom:2px solid transparent;font-size:12px;white-space:nowrap;color:#666;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent;transition:color .15s}
+.sbtn.on{color:#6C63FF;border-bottom-color:#6C63FF;font-weight:600}
+.badge{border-radius:20px;padding:1px 6px;font-size:10px;margin-left:3px}
+
+.content{padding:16px;max-width:600px;margin:0 auto}
+
+.search-wrap{position:relative;margin-bottom:14px}
+.search{width:100%;padding:12px 16px 12px 42px;border:1px solid #2A2A3E;border-radius:14px;font-size:13px;background:#1A1A2E;outline:none;font-family:'Inter',sans-serif;color:#E8E8F0;transition:border .15s}
+.search:focus{border-color:#6C63FF}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#555;font-size:15px;pointer-events:none}
+
+.form-box{background:#1A1A2E;border-radius:16px;padding:18px;border:1px solid #6C63FF;margin-bottom:14px;box-shadow:0 0 30px rgba(108,99,255,0.1)}
+.form-title{font-weight:700;font-size:14px;margin-bottom:14px;color:#fff}
+.inp{width:100%;padding:10px 14px;border:1px solid #2A2A3E;border-radius:10px;font-size:13px;margin-bottom:10px;outline:none;font-family:'Inter',sans-serif;background:#0F0F1A;color:#E8E8F0;transition:border .15s}
+.inp:focus{border-color:#6C63FF}
+textarea.inp{resize:vertical;min-height:60px}
+.row2{display:flex;gap:8px;margin-bottom:10px}
+.row2 select,.row2 input{flex:1;padding:9px 12px;border:1px solid #2A2A3E;border-radius:10px;font-size:12px;outline:none;font-family:'Inter',sans-serif;background:#0F0F1A;color:#E8E8F0}
+.row2 select:focus,.row2 input:focus{border-color:#6C63FF}
+
+.tags-label{font-size:11px;color:#666;margin-bottom:8px;font-weight:500;text-transform:uppercase;letter-spacing:1px}
+.tags-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tag-opt{border:1px solid #2A2A3E;border-radius:20px;padding:5px 12px;font-size:12px;color:#888;cursor:pointer;font-family:'Inter',sans-serif;background:#0F0F1A;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.tag-opt.sel{background:#6C63FF22;border-color:#6C63FF;color:#6C63FF;font-weight:600}
+
+.audio-btn{width:100%;padding:11px;border:1px dashed #2A2A3E;border-radius:10px;background:#0F0F1A;color:#666;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;margin-bottom:10px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.audio-btn.recording{border-color:#EF4444;color:#EF4444;background:#EF444410;animation:pulse-border 1s infinite}
+@keyframes pulse-border{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+
+.btn-row{display:flex;gap:8px;margin-top:4px}
+.btn-row .btn{flex:1;padding:11px}
+.btn-cancel{background:#1E1E30;color:#888;border:1px solid #2A2A3E}
+
+.card{background:#1A1A2E;border-radius:14px;padding:14px;margin-bottom:8px;border:1px solid #2A2A3E;cursor:pointer;transition:border .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.card:active{transform:scale(.98)}
+.card.sel{border-color:#6C63FF;box-shadow:0 0 0 1px #6C63FF22}
+.card-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card-title{font-weight:600;font-size:13px;color:#E8E8F0;line-height:1.4;flex:1}
+.prio{border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;white-space:nowrap}
+.card-desc{font-size:11px;color:#666;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-bot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.pill{border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600}
+.meta{font-size:10px;color:#555;display:flex;gap:6px}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.ctag{background:#1E1E30;color:#6C63FF;border-radius:4px;padding:2px 6px;font-size:10px}
+
+.empty{text-align:center;padding:60px 16px;color:#444}
+.empty-icon{font-size:44px;margin-bottom:12px;opacity:.5}
+
+.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;color:#6C63FF;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:16px;-webkit-tap-highlight-color:transparent;padding:4px 0}
+.detail-box{background:#1A1A2E;border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid #2A2A3E}
+.detail-title{font-weight:700;font-size:17px;color:#fff;margin-bottom:6px;letter-spacing:-0.3px}
+.detail-desc{font-size:13px;color:#888;line-height:1.5;margin-bottom:12px}
+.detail-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.status-sel{border:none;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;outline:none;font-family:'Inter',sans-serif}
+.del-btn{background:#EF444415;color:#EF4444;border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-left:auto}
+
+.chat-box{background:#1A1A2E;border-radius:16px;overflow:hidden;border:1px solid #2A2A3E}
+.chat-msgs{padding:16px;display:flex;flex-direction:column;gap:10px;min-height:180px;max-height:45vh;overflow-y:auto}
+.msg-user{align-self:flex-end;background:#6C63FF;color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:13px;line-height:1.5;max-width:85%}
+.msg-ai{align-self:flex-start;background:#0F0F1A;color:#E8E8F0;border-radius:14px 14px 14px 4px;padding:10px 14px;font-size:13px;line-height:1.5;max-width:85%;border:1px solid #2A2A3E}
+.chat-bottom{border-top:1px solid #2A2A3E}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px}
+.chat-inp{flex:1;padding:10px 12px;border:1px solid #2A2A3E;border-radius:10px;font-size:13px;outline:none;font-family:'Inter',sans-serif;background:#0F0F1A;color:#E8E8F0}
+.chat-inp:focus{border-color:#6C63FF}
+.send{background:#6C63FF;color:#fff;border:none;border-radius:10px;padding:0 16px;font-size:16px;cursor:pointer;font-family:'Inter',sans-serif}
+.send:disabled{background:#2A2A4E;cursor:not-allowed}
+.chat-audio{width:100%;padding:10px;background:#0F0F1A;border:none;border-top:1px solid #2A2A3E;color:#666;font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.chat-audio.rec{color:#EF4444;animation:pulse-border 1s infinite}
+
+.suggestions{padding:20px 16px;text-align:center}
+.sug-btn{display:inline-block;background:#0F0F1A;border:1px solid #2A2A3E;border-radius:20px;padding:7px 13px;font-size:12px;color:#6C63FF;cursor:pointer;font-family:'Inter',sans-serif;margin:3px;-webkit-tap-highlight-color:transparent}
+.warn-box{background:#F59E0B15;border:1px solid #F59E0B44;border-radius:10px;padding:10px 14px;font-size:12px;color:#F59E0B;margin-top:12px;text-align:left}
+.warn-box button{background:none;border:none;color:#6C63FF;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal{background:#1A1A2E;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:600px;border-top:1px solid #2A2A3E}
+.modal-title{font-weight:700;font-size:15px;margin-bottom:8px;color:#fff}
+.modal-desc{font-size:13px;color:#666;margin-bottom:16px;line-height:1.6}
+.modal-desc a{color:#6C63FF}
+
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.dot{width:6px;height:6px;border-radius:50%;background:#6C63FF;display:inline-block;margin:0 2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="sub">Suas Demandas</div>
+    <div class="title">Central de Projetos</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-amber" id="aiBtn" onclick="openModal()">IA</button>
+    <button class="btn btn-purple" onclick="abrirForm()">+ Nova</button>
+  </div>
+</div>
+
+<div class="statusbar" id="statusbar"></div>
+<div class="content" id="app"></div>
+
+<div class="overlay" id="modal" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Configurar IA</div>
+    <div class="modal-desc">Crie uma chave grátis em <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys → Create Key. Fica salva só no seu celular.</div>
+    <input class="inp" id="apiInp" placeholder="sk-ant-..."/>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="btn btn-purple" onclick="salvarChave()">Salvar</button>
+      <button class="btn btn-cancel" onclick="fecharModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var STATUS = {
+  nova:{l:'Nova',c:'#6C63FF',b:'#6C63FF22'},
+  em_andamento:{l:'Em andamento',c:'#F59E0B',b:'#F59E0B22'},
+  standby:{l:'Standby',c:'#8B5CF6',b:'#8B5CF622'},
+  concluida:{l:'Concluída',c:'#10B981',b:'#10B98122'}
+};
+var PRIO = {
+  alta:{l:'Alta',c:'#EF4444'},
+  media:{l:'Média',c:'#F59E0B'},
+  baixa:{l:'Baixa',c:'#10B981'}
+};
+var TAGS_FIXAS = ['Connecte Interno','Connecte Externo','AWS','Dell','Projetos','Material de Marca'];
+
+var tasks = JSON.parse(localStorage.getItem('gd3')||'[]');
+var selId = null;
+var filtro = 'todas';
+var msgs = [];
+var loading = false;
+var apiKey = localStorage.getItem('gd_key')||'';
+var mostrandoForm = false;
+var tagsForm = [];
+var mediaRec = null;
+var gravando = false;
+
+function save(){ localStorage.setItem('gd3',JSON.stringify(tasks)); }
+
+function renderBar(){
+  var counts = {};
+  Object.keys(STATUS).forEach(function(k){ counts[k]=tasks.filter(function(t){return t.status===k;}).length; });
+  var arr = [{k:'todas',l:'Todas',c:'#6C63FF',n:tasks.length}];
+  Object.keys(STATUS).forEach(function(k){ arr.push({k:k,l:STATUS[k].l,c:STATUS[k].c,n:counts[k]||0}); });
+  document.getElementById('statusbar').innerHTML = arr.map(function(f){
+    var on=filtro===f.k;
+    return '<button class="sbtn'+(on?' on':'')+'" onclick="setFiltro(\''+f.k+'\')">'+f.l+'<span class="badge" style="background:'+(on?f.c:'#1E1E30')+';color:'+(on?'#fff':f.c)+'">'+f.n+'</span></button>';
+  }).join('');
+}
+
+function setFiltro(s){ filtro=s; selId=null; msgs=[]; renderBar(); render(); }
+
+function render(){
+  if(selId){ renderDetalhe(); return; }
+  var q = document.querySelector('.search')?document.querySelector('.search').value.toLowerCase():'';
+  var list = tasks.filter(function(t){
+    return (filtro==='todas'||t.status===filtro)&&(t.titulo.toLowerCase().indexOf(q)>=0||(t.descricao||'').toLowerCase().indexOf(q)>=0);
+  });
+
+  var html = '<div class="search-wrap"><span class="search-icon">⌕</span><input class="search" placeholder="Buscar demandas..." oninput="render()" value="'+(q||'')+'"/></div>';
+
+  if(mostrandoForm){
+    var tagsHtml = TAGS_FIXAS.map(function(tg){
+      return '<span class="tag-opt'+(tagsForm.indexOf(tg)>=0?' sel':'')+'" onclick="toggleTag(\''+tg+'\')">'+tg+'</span>';
+    }).join('');
+    html += '<div class="form-box">'+
+      '<div class="form-title">Nova demanda</div>'+
+      '<button class="audio-btn" id="audioFormBtn" onclick="gravarForm()">Falar título</button>'+
+      '<input class="inp" id="ft" placeholder="Título*"/>'+
+      '<textarea class="inp" id="fd" rows="2" placeholder="Descrição (opcional)"></textarea>'+
+      '<div class="row2">'+
+        '<select id="fp"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select>'+
+        '<input type="date" id="fpr"/>'+
+      '</div>'+
+      '<div class="tags-label">Tags</div>'+
+      '<div class="tags-grid">'+tagsHtml+'</div>'+
+      '<div class="btn-row">'+
+        '<button class="btn btn-purple" onclick="addTask()">Adicionar</button>'+
+        '<button class="btn btn-cancel" onclick="cancelarForm()">Cancelar</button>'+
+      '</div></div>';
+  }
+
+  if(!list.length){
+    html += '<div class="empty"><div class="empty-icon">📋</div><div style="font-weight:600;color:#555;font-size:14px;margin-bottom:6px">'+(tasks.length===0?'Nenhuma demanda ainda':'Nada encontrado')+'</div><div style="font-size:12px;color:#444">'+(tasks.length===0?'Toque em + Nova para começar':'Tente outro filtro')+'</div></div>';
+  } else {
+    list.forEach(function(t){
+      var tagsEl = (t.tags&&t.tags.length)?'<div class="card-tags">'+t.tags.map(function(tg){return '<span class="ctag">'+tg+'</span>';}).join('')+'</div>':'';
+      html += '<div class="card'+(selId===t.id?' sel':'')+'" onclick="selTask('+t.id+')">'+
+        '<div class="card-top"><div class="card-title">'+t.titulo+'</div>'+
+        '<div class="prio" style="background:'+PRIO[t.prioridade].c+'22;color:'+PRIO[t.prioridade].c+'">'+PRIO[t.prioridade].l+'</div></div>'+
+        (t.descricao?'<div class="card-desc">'+t.descricao+'</div>':'')+
+        tagsEl+
+        '<div class="card-bot"><div class="pill" style="background:'+STATUS[t.status].b+';color:'+STATUS[t.status].c+'">'+STATUS[t.status].l+'</div>'+
+        '<div class="meta">'+(t.prazo?''+t.prazo:'')+'</div></div></div>';
+    });
+  }
+  document.getElementById('app').innerHTML = html;
+  if(apiKey){document.getElementById('aiBtn').className='btn btn-green';document.getElementById('aiBtn').textContent='IA ativa';}
+}
+
+function toggleTag(tg){
+  var i=tagsForm.indexOf(tg);
+  if(i>=0) tagsForm.splice(i,1); else tagsForm.push(tg);
+  render();
+}
+
+function abrirForm(){ mostrandoForm=true; tagsForm=[]; selId=null; render(); }
+function cancelarForm(){ mostrandoForm=false; tagsForm=[]; render(); }
+
+function addTask(){
+  var titulo=document.getElementById('ft').value.trim();
+  if(!titulo){alert('Coloca um título!');return;}
+  var t={id:Date.now(),titulo:titulo,descricao:document.getElementById('fd').value,status:'nova',
+    prioridade:document.getElementById('fp').value,prazo:document.getElementById('fpr').value,tags:tagsForm.slice()};
+  tasks.unshift(t); save(); mostrandoForm=false; tagsForm=[];
+  msgs=[{r:'a',t:'Demanda "'+t.titulo+'" adicionada! Posso montar um plano de ação ou definir próximos passos.'}];
+  selId=t.id; renderBar(); render();
+}
+
+function gravarForm(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){alert('Seu navegador não suporta reconhecimento de voz. Tente o Chrome.');return;}
+  var SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec = new SR();
+  rec.lang='pt-BR'; rec.interimResults=false; rec.maxAlternatives=1;
+  var btn=document.getElementById('audioFormBtn');
+  btn.textContent='Gravando... (toque para parar)'; btn.className='audio-btn recording';
+  rec.start();
+  rec.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    document.getElementById('ft').value=txt;
+    btn.textContent='Falar título'; btn.className='audio-btn';
+  };
+  rec.onerror=function(){btn.textContent='Falar título';btn.className='audio-btn';};
+  rec.onend=function(){btn.textContent='Falar título';btn.className='audio-btn';};
+}
+
+function selTask(id){ selId=id; msgs=[]; render(); }
+
+function renderDetalhe(){
+  var t=tasks.find(function(x){return x.id===selId;});
+  if(!t){selId=null;render();return;}
+  var statusOpts=Object.keys(STATUS).map(function(k){return '<option value="'+k+'"'+(t.status===k?' selected':'')+'>'+STATUS[k].l+'</option>';}).join('');
+  var msgsHtml='';
+  if(!msgs.length){
+    msgsHtml='<div class="suggestions">'+
+      '<div style="font-size:26px;margin-bottom:8px">✦</div>'+
+      '<div style="font-weight:600;color:#E8E8F0;font-size:13px;margin-bottom:4px">Assistente</div>'+
+      '<div style="color:#555;font-size:12px;margin-bottom:14px">Plano de ação, riscos, próximos passos.</div>'+
+      ['Monte um plano de ação','Quais os riscos?','Próximos passos?','Como priorizar?'].map(function(s){
+        return '<span class="sug-btn" onclick="usarSug(\''+s+'\')">'+s+'</span>';
+      }).join('')+
+      (!apiKey?'<div class="warn-box">Configure a chave de API para usar a IA. <button onclick="openModal()">Configurar</button></div>':'')+
+      '</div>';
+  } else {
+    msgsHtml=msgs.map(function(m){return '<div class="'+(m.r==='u'?'msg-user':'msg-ai')+'">'+md(m.t)+'</div>';}).join('');
+    if(loading) msgsHtml+='<div class="msg-ai"><span class="dot" style="animation:pulse 1s 0s infinite"></span><span class="dot" style="animation:pulse 1s .2s infinite"></span><span class="dot" style="animation:pulse 1s .4s infinite"></span></div>';
+  }
+  var tagsEl=(t.tags&&t.tags.length)?t.tags.map(function(tg){return '<span class="ctag" style="font-size:11px;padding:3px 8px">'+tg+'</span>';}).join(''):'';
+  var html=
+    '<button class="back-btn" onclick="voltar()">← Voltar</button>'+
+    '<div class="detail-box">'+
+      '<div class="detail-title">'+t.titulo+'</div>'+
+      (t.descricao?'<div class="detail-desc">'+t.descricao+'</div>':'')+
+      '<div class="detail-meta">'+
+        '<select class="status-sel" style="background:'+STATUS[t.status].b+';color:'+STATUS[t.status].c+'" onchange="mudaStatus('+t.id+',this.value)">'+statusOpts+'</select>'+
+        '<span class="pill" style="background:'+PRIO[t.prioridade].c+'22;color:'+PRIO[t.prioridade].c+'">'+PRIO[t.prioridade].l+'</span>'+
+        (t.prazo?'<span style="font-size:11px;color:#555">'+t.prazo+'</span>':'')+
+        tagsEl+
+        '<button class="del-btn" onclick="delTask('+t.id+')">Excluir</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="chat-box">'+
+      '<div class="chat-msgs" id="chatMsgs">'+msgsHtml+'</div>'+
+      '<div class="chat-bottom">'+
+        '<div class="chat-input-row">'+
+          '<input class="chat-inp" id="chatInp" placeholder="'+(apiKey?'Pergunte sobre esta demanda...':'Configure a IA primeiro...')+'" onkeydown="if(event.key===\'Enter\'){event.preventDefault();enviar()}"/>'+
+          '<button class="send" onclick="enviar()" '+(loading?'disabled':'')+'>↑</button>'+
+        '</div>'+
+        '<button class="chat-audio" id="chatAudioBtn" onclick="gravarChat()">Falar mensagem</button>'+
+      '</div>'+
+    '</div>';
+  document.getElementById('app').innerHTML=html;
+  var cm=document.getElementById('chatMsgs');
+  if(cm) cm.scrollTop=cm.scrollHeight;
+}
+
+function md(t){
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^(\d+)\.\s/gm,'<br><strong>$1.</strong> ')
+    .replace(/^[-•]\s/gm,'<br>• ')
+    .replace(/\n/g,'<br>');
+}
+
+function voltar(){ selId=null; msgs=[]; render(); }
+
+function mudaStatus(id,s){
+  tasks=tasks.map(function(t){return t.id===id?Object.assign({},t,{status:s}):t;});
+  save(); renderBar(); renderDetalhe();
+}
+
+function delTask(id){
+  if(!confirm('Excluir esta demanda?'))return;
+  tasks=tasks.filter(function(t){return t.id!==id;});
+  save(); selId=null; msgs=[]; renderBar(); render();
+}
+
+function gravarChat(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){alert('Seu navegador não suporta voz. Use o Chrome.');return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec=new SR();
+  rec.lang='pt-BR'; rec.interimResults=false;
+  var btn=document.getElementById('chatAudioBtn');
+  btn.textContent='Gravando... (toque para parar)'; btn.className='chat-audio rec';
+  rec.start();
+  rec.onresult=function(e){
+    var txt=e.results[0][0].transcript;
+    document.getElementById('chatInp').value=txt;
+    btn.textContent='Falar mensagem'; btn.className='chat-audio';
+    enviar();
+  };
+  rec.onerror=function(){btn.textContent='Falar mensagem';btn.className='chat-audio';};
+  rec.onend=function(){btn.textContent='Falar mensagem';btn.className='chat-audio';};
+}
+
+function usarSug(s){
+  if(!apiKey){openModal();return;}
+  document.getElementById('chatInp').value=s;
+  enviar();
+}
+
+function enviar(){
+  if(loading)return;
+  var inp=document.getElementById('chatInp');
+  var txt=inp.value.trim();
+  if(!txt)return;
+  if(!apiKey){openModal();return;}
+  inp.value='';
+  msgs.push({r:'u',t:txt});
+  loading=true;
+  renderDetalhe();
+  var t=tasks.find(function(x){return x.id===selId;});
+  var ctx=t?'Demanda: "'+t.titulo+'", Status: '+STATUS[t.status].l+', Prioridade: '+PRIO[t.prioridade].l+', Descrição: "'+(t.descricao||'sem descrição')+'", Tags: '+(t.tags||[]).join(', ')+'.':'';
+  var apiMsgs=msgs.map(function(m){return {role:m.r==='u'?'user':'assistant',content:m.t};});
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+      system:'Você é assistente de gestão de demandas. '+ctx+' Responda em português, de forma concisa e prática.',
+      messages:apiMsgs})
+  }).then(function(r){return r.json();}).then(function(data){
+    var text=data.error?'Erro: '+data.error.message:data.content.map(function(i){return i.text||'';}).join('');
+    msgs.push({r:'a',t:text}); loading=false; renderDetalhe();
+  }).catch(function(e){msgs.push({r:'a',t:'Erro: '+e.message});loading=false;renderDetalhe();});
+}
+
+function openModal(){document.getElementById('apiInp').value=apiKey;document.getElementById('modal').style.display='flex';}
+function fecharModal(){document.getElementById('modal').style.display='none';}
+function salvarChave(){
+  apiKey=document.getElementById('apiInp').value.trim();
+  localStorage.setItem('gd_key',apiKey);
+  fecharModal();
+  if(apiKey){document.getElementById('aiBtn').className='btn btn-green';document.getElementById('aiBtn').textContent='IA ativa';}
+  if(selId)renderDetalhe();else render();
+}
+
+if(apiKey){document.getElementById('aiBtn').className='btn btn-green';document.getElementById('aiBtn').textContent='IA ativa';}
+renderBar(); render();
+</script>
+</body>
+</html>
